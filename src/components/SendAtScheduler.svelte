@@ -24,8 +24,11 @@
   })
 
   function setDate(date: Date) {
+    let dateStr = `${date.getFullYear()}-`
+    dateStr += date.getMonth() < 10 ? `0${date.getMonth()}-` : `${date.getMonth()}-`
+    dateStr += date.getDay() < 10 ? `0${date.getDate()}` : `${date.getDay()}-`
     value = date
-    _date = date.toLocaleDateString()
+    _date = dateStr
     _time = date.toLocaleTimeString()
   }
 
@@ -68,15 +71,15 @@
   <h3>Date</h3>
   <div class="grid grid-cols-2 gap-2 mb-2">
     {#each dates as d}
-    <Button title={d.toLocaleDateString()} onClick={() => setSelectedDate(d)} />
+      <Button variant="outlined" title={d.toLocaleDateString()} onClick={() => setSelectedDate(d)} />
     {/each}
   </div>
   <h3>Time</h3>
   <div class="grid grid-cols-2 gap-2">
-    <Button title="Night (12-6am)" onClick={() => setTimeRange(TIME_RANGE.NIGHT)} />
-    <Button title="Morning" onClick={() => setTimeRange(TIME_RANGE.MORNING)} />
-    <Button title="Afternoon" onClick={() => setTimeRange(TIME_RANGE.AFTERNOON)} />
-    <Button title="Evening" onClick={() => setTimeRange(TIME_RANGE.EVENING)} />
+    <Button variant="outlined" title="Night (12-6am)" onClick={() => setTimeRange(TIME_RANGE.NIGHT)} />
+    <Button variant="outlined" title="Morning" onClick={() => setTimeRange(TIME_RANGE.MORNING)} />
+    <Button variant="outlined" title="Afternoon" onClick={() => setTimeRange(TIME_RANGE.AFTERNOON)} />
+    <Button variant="outlined" title="Evening" onClick={() => setTimeRange(TIME_RANGE.EVENING)} />
   </div>
 </div>
 
