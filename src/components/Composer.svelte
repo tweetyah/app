@@ -1,7 +1,9 @@
 <script lang="ts">
   import Button from "./Button.svelte";
-import ComposerCard from "./ComposerCard.svelte";
+  import ComposerCard from "./ComposerCard.svelte";
+  import SendAtScheduler from "./SendAtScheduler.svelte";
 
+  let sendAt: Date = new Date()
   let tweets = [{
     content: ""
   }]
@@ -14,9 +16,10 @@ import ComposerCard from "./ComposerCard.svelte";
 </script>
 
 <div>
+  {sendAt}
   {JSON.stringify(tweets)}
-  <div class="flex">
-    <div id="composer-wrapper" class="flex-1">
+  <div class="grid grid-cols-2 gap-2">
+    <div id="composer-wrapper">
       <div class="bg-slate-100 rounded mb-2">
         {#each tweets as t, idx}
           <ComposerCard 
@@ -27,9 +30,9 @@ import ComposerCard from "./ComposerCard.svelte";
       </div>
       <Button onClick={() => addTweet()} icon="bx-list-plus" title="Add tweet" />
     </div>
-    <div id="composer-preview" class="flex-1">
+    <div id="composer-preview">
       <div>
-        Send at scheduler
+        <SendAtScheduler bind:value={sendAt} />
       </div>
       <div>
         Retweet at scheduler
