@@ -10,7 +10,7 @@ body {
 #app {
   height: 100%;
   width: 100%;
-  @apply bg-slate-50;
+  @apply bg-slate-100;
 }
 /* :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;

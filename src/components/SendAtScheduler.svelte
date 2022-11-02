@@ -61,7 +61,7 @@
 
 </script>
 
-<div class="bg-slate-100 rounded mb-2 p-2">
+<div class="mb-2 p-2">
   <h2>Send at: {value.toLocaleDateString()} {value.toLocaleTimeString()}</h2>
   <input type="date" bind:value={_date} />
   <input type="time" bind:value={_time}/>
