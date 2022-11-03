@@ -5,9 +5,10 @@
   import { onMount } from "svelte";
 
   export let value: Date
+  export let isEnabled: boolean = false
+
   let _date: string
   let _time: string
-
   let dates: Date[] = []
 
   onMount(() => {
@@ -69,23 +70,32 @@
 </script>
 
 <div class="mb-2 p-2">
-  <div class="border-[1px] border-slate-300 rounded p-1 flex gap-4">
-    <input class="focus:outline-0" type="date" bind:value={_date} />
-    <input class="focus:outline-0" type="time" bind:value={_time}/>
+  <div>
+    <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+      <input bind:checked={isEnabled} type="checkbox" name="toggle" id="toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+      <label for="toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-300 cursor-pointer"></label>
+    </div>
+    <label for="toggle">Enable retweeting</label>
   </div>
-  <h3>Date</h3>
-  <div class="grid grid-cols-2 gap-2 mb-2">
-    {#each dates as d}
-      <Button variant="outlined" title={d.toLocaleDateString()} onClick={() => setSelectedDate(d)} />
-    {/each}
-  </div>
-  <h3>Time</h3>
-  <div class="grid grid-cols-2 gap-2">
-    <Button variant="outlined" title="Night (12-6am)" onClick={() => setTimeRange(TIME_RANGE.NIGHT)} />
-    <Button variant="outlined" title="Morning" onClick={() => setTimeRange(TIME_RANGE.MORNING)} />
-    <Button variant="outlined" title="Afternoon" onClick={() => setTimeRange(TIME_RANGE.AFTERNOON)} />
-    <Button variant="outlined" title="Evening" onClick={() => setTimeRange(TIME_RANGE.EVENING)} />
-  </div>
+  {#if isEnabled}
+    <div class="border-[1px] border-slate-300 rounded p-1 flex gap-4 mt-2 mb-1">
+      <input class="focus:outline-0" type="date" bind:value={_date} />
+      <input class="focus:outline-0" type="time" bind:value={_time}/>
+    </div>
+    <h3>Date</h3>
+    <div class="grid grid-cols-2 gap-2 mb-2">
+      {#each dates as d}
+        <Button variant="outlined" title={d.toLocaleDateString()} onClick={() => setSelectedDate(d)} />
+      {/each}
+    </div>
+    <h3>Time</h3>
+    <div class="grid grid-cols-2 gap-2">
+      <Button variant="outlined" title="Night (12-6am)" onClick={() => setTimeRange(TIME_RANGE.NIGHT)} />
+      <Button variant="outlined" title="Morning" onClick={() => setTimeRange(TIME_RANGE.MORNING)} />
+      <Button variant="outlined" title="Afternoon" onClick={() => setTimeRange(TIME_RANGE.AFTERNOON)} />
+      <Button variant="outlined" title="Evening" onClick={() => setTimeRange(TIME_RANGE.EVENING)} />
+    </div>
+  {/if}
 </div>
 
 

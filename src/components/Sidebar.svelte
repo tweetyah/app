@@ -6,5 +6,5 @@
   <div class="p-3 text-lg">Tweetyah!</div>
   <hr class="border-slate-700 my-2" />
   <NavLink title="Home" icon="bx-home" to="/" />
-  <NavLink title="Library" icon="bx-collection" to="/library" />
+  <!-- <NavLink title="Library" icon="bx-collection" to="/library" /> -->
 </div>
