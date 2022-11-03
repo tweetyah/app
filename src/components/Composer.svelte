@@ -1,4 +1,6 @@
 <script lang="ts">
+  import type { Tweet } from "../models";
+  import { api } from "../store";
   import Accordion from "./Accordion.svelte";
   import AccordionNode from "./AccordionNode.svelte";
   import Button from "./Button.svelte";
@@ -9,22 +11,36 @@
   let sendAt: Date = new Date()
   let retweetAt: Date
   let shouldRetweet: boolean
-  let tweets = [{
-    content: ""
+  let tweets: Tweet[] = [{
+    text: ""
   }]
 
   function addTweet() {
     tweets = [...tweets, {
-      content: ""
+      text: ""
+    }]
+  }
+
+  async function saveTweets() {
+    // TODO: app or comp state
+    tweets.forEach(t => {
+      t.sendAt = sendAt
+      if(shouldRetweet) {
+        t.retweetAt = retweetAt
+      }
+    })
+    await $api.saveTweets(tweets)
+    reset()
+  }
+
+  function reset() {
+    tweets = [{
+      text: ""
     }]
   }
 </script>
 
 <div>
-  {sendAt}
-  {JSON.stringify(tweets)}
-  {shouldRetweet}
-  {retweetAt}
   <div class="grid grid-cols-2 gap-2">
     <div id="composer-wrapper">
       <div class="bg-white shadow-sm rounded mb-2">
@@ -36,6 +52,7 @@
         {/each}
       </div>
       <Button onClick={() => addTweet()} icon="bx-list-plus" title="Add tweet" />
+      <Button onClick={() => saveTweets()} icon="bxs-save" title="Save" />
     </div>
     <div id="composer-preview">
       <Accordion>

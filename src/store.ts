@@ -1,9 +1,12 @@
 import { writable } from 'svelte/store';
+import type { ApiService } from './services/ApiService';
 
 export const auth = writable<any>();
 export const name = writable<string>();
 export const profileImgUrl = writable<string>();
 export const handle = writable<string>();
+
+export const api = writable<ApiService>();
 
 // TODO: Type this
 export function setAuth(value: any) {
