@@ -12,7 +12,7 @@
       map[kvp.split("=")[0]] = kvp.split("=")[1]
     })
 
-    let res = await fetch("http://localhost:8888/.netlify/functions/auth", {
+    let res = await fetch("/.netlify/functions/auth", {
       method: "post",
       headers: {
         "Content-Type": "application/json"

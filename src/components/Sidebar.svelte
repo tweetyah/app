@@ -3,7 +3,7 @@
   import NavLink from "./NavLink.svelte";
   import Button from './Button.svelte';
 
-  const loginUrl = "https://twitter.com/i/oauth2/authorize?response_type=code&client_id=UFBHNHNySjVId2VLWWhSMTIyQ1o6MTpjaQ&redirect_uri=http://localhost:8888/auth&scope=tweet.read%20users.read%20offline.access&state=state&code_challenge=challenge&code_challenge_method=plain"
+  const loginUrl = `https://twitter.com/i/oauth2/authorize?response_type=code&client_id=${import.meta.env.VITE_TWITTER_CLIENT_ID}&redirect_uri=${import.meta.env.VITE_TWITTER_REDIRECT_URI}&scope=tweet.read%20users.read%20offline.access&state=state&code_challenge=challenge&code_challenge_method=plain`
   let name: string
   let handle : string
   let profilePicUrl: string
@@ -11,7 +11,10 @@
   
   // TODO: type this
   auth.subscribe((value: any) => {
-    if(!value || !value.name) redirectToLogin()
+    if(!value || !value.name) {
+      redirectToLogin()
+      return
+    }
     name = value.name
     handle = value.username
     profilePicUrl = value.profile_image_url

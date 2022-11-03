@@ -115,8 +115,8 @@ func GetTwitterTokens(code string) (*TwitterAuthResponse, error) {
 	data := url.Values{
 		"code":          {code},
 		"grant_type":    {"authorization_code"},
-		"client_id":     {os.Getenv("TWITTER_CLIENT_ID")},
-		"redirect_uri":  {os.Getenv("TWITTER_REDIRECT_URI")},
+		"client_id":     {os.Getenv("VITE_TWITTER_CLIENT_ID")},
+		"redirect_uri":  {os.Getenv("VITE_TWITTER_REDIRECT_URI")},
 		"code_verifier": {"challenge"},
 	}
 
@@ -124,7 +124,7 @@ func GetTwitterTokens(code string) (*TwitterAuthResponse, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "(GetTwitterTokens) http.NewRequest")
 	}
-	req.SetBasicAuth(os.Getenv("TWITTER_CLIENT_ID"), os.Getenv("TWITTER_CLIENT_SECRET"))
+	req.SetBasicAuth(os.Getenv("VITE_TWITTER_CLIENT_ID"), os.Getenv("TWITTER_CLIENT_SECRET"))
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	client := &http.Client{}
 	resp, err := client.Do(req)
