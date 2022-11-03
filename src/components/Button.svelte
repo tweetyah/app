@@ -7,7 +7,6 @@
   let classes = variant === "outlined" ?
     "bg-inherit hover:bg-slate-100 border-[1px] border-slate-800" :
     "bg-slate-800 text-slate-50 hover:bg-slate-600";
-
 </script>
   
 

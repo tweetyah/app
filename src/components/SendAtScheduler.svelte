@@ -27,9 +27,12 @@
     let dateStr = `${date.getFullYear()}-`
     dateStr += date.getMonth() < 10 ? `0${date.getMonth()}-` : `${date.getMonth()}-`
     dateStr += date.getDay() < 10 ? `0${date.getDate()}` : `${date.getDay()}-`
+    let timeStr = date.getHours() < 10 ? `0${date.getHours()}:` : `${date.getHours()}:`
+    timeStr += date.getMinutes() < 10 ? `0${date.getMinutes()}:` : `${date.getMinutes()}:`
+    timeStr += date.getSeconds() < 10 ? `0${date.getSeconds()}:` : `${date.getSeconds()}`
     value = date
     _date = dateStr
-    _time = date.toLocaleTimeString()
+    _time = timeStr
   }
 
   function setTimeRange(range: TimeRange) {
