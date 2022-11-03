@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -70,13 +69,11 @@ func Post(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse
 	if err != nil {
 		return utils.ErrorResponse(err, "(Post) GetTwitterTokens")
 	}
-	log.Println(twitterAuthResp)
 
 	userDetails, err := GetTwitterUserDetails(twitterAuthResp.AccessToken)
 	if err != nil {
 		return utils.ErrorResponse(err, "(Post) GetTwitterUserDetails")
 	}
-	log.Println(userDetails)
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"twitter:access_token":      twitterAuthResp.AccessToken,
@@ -87,15 +84,12 @@ func Post(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse
 		"twitter:name":              userDetails.Data.Name,
 		"nbf":                       time.Date(2015, 10, 10, 12, 0, 0, 0, time.UTC).Unix(),
 	})
-	log.Println(token)
 
 	// Sign and get the complete encoded token as a string using the secret
 	tokenString, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 	if err != nil {
 		return utils.ErrorResponse(err, "(Post) token.SignedString")
 	}
-
-	log.Println(tokenString)
 
 	jstr, err := utils.ConvertToJsonString(Response{
 		AccessToken:     tokenString,

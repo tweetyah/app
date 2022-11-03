@@ -1,12 +1,23 @@
 <script lang="ts">
   import type { Tweet } from "../models";
+  import { name, handle, profileImgUrl } from "../store";
   import Button from "./Button.svelte";
   import ComposerTextarea from "./ComposerTextarea.svelte";
+
+  // private fields
+  let _name: string;
+  let _handle: string;
+  let _profileImgUrl: string;
 
   // Props
   export let tweet: Tweet;
   export let index: number;
   export let total: number;
+
+  // store
+  name.subscribe(value => _name = value)
+  handle.subscribe(value => _handle = value)
+  profileImgUrl.subscribe(value => _profileImgUrl = value)
 
   // Functions
   function selectImage() {
@@ -16,12 +27,12 @@
 
 <div class="flex">
   <div>
-    <img src="https://pbs.twimg.com/profile_images/1507551817646977024/H-jpBvbo_400x400.jpg" class="w-[50px] h-[50px] rounded-full m-2" />
+    <img src={ _profileImgUrl } class="w-[50px] h-[50px] rounded-full m-2" alt="user profile image" />
   </div>
   <div class="flex-1 m-2">
     <div>
-      <span class="font-bold">Brian Morrison II</span>
-      <span class="italic text-slate-600 text-sm">@brianmmdev</span>
+      <span class="font-bold">{ _name }</span>
+      <span class="italic text-slate-600 text-sm">@{ _handle }</span>
     </div>
     <ComposerTextarea bind:value={tweet.content} />
     <div class="flex text-sm align-center text-slate-600">
@@ -32,7 +43,7 @@
         {/if}
       </div>
       <div>
-        <Button onClick={() => selectImage()} icon="bx-image-add" title="Add image" />
+        <!-- <Button onClick={() => selectImage()} icon="bx-image-add" title="Add image" /> -->
       </div>
     </div>
   </div>

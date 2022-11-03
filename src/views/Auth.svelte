@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { navigateTo } from "svelte-router-spa";
-  import { auth } from '../store'
+  import { setAuth } from '../store'
 
   onMount(async () => {
     let query = location.search
@@ -24,7 +24,7 @@
     let json = await res.json()
 
     localStorage.setItem("auth", JSON.stringify(json))
-    auth.set(json)
+    setAuth(json)
 
     navigateTo("/")
   })
