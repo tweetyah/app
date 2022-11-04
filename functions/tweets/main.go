@@ -50,9 +50,13 @@ func Post(request events.APIGatewayProxyRequest, db *sql.DB) (events.APIGatewayP
 		return utils.ErrorResponse(err, "json.Unmarshal")
 	}
 
+	log.Println("headers", request.Headers)
+
 	authHeader := request.Headers["Authorization"]
 	// TODO: VALIDATE THIS!!!
 	authHeader = strings.Replace(authHeader, "Bearer ", "", 1)
+
+	log.Println("auth", authHeader)
 
 	claims, _ := extractClaims(authHeader)
 	log.Println("claims", claims)
