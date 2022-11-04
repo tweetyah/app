@@ -102,7 +102,7 @@ func Post(request events.APIGatewayProxyRequest, db *sql.DB) (events.APIGatewayP
 		threadStart.ThreadCount = &threadCount
 
 		var params []interface{}
-		query = "insert into tweets (text, is_thread, thread_order, thread_parent, send_at, retweet_at) values (?, true, ?, ?, ?, ?, ?)"
+		query = "insert into tweets (text, is_thread, thread_order, thread_parent, send_at, retweet_at, id_user) values (?, true, ?, ?, ?, ?, ?)"
 		for idx, el := range tweets {
 			// Skip the first tweet since it was inserted earlier
 			if idx == 0 {
