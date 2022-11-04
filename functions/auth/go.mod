@@ -12,6 +12,8 @@ require (
 )
 
 require (
+	core v0.0.0-00010101000000-000000000000 // indirect
 	github.com/aws/aws-sdk-go v1.43.3 // indirect
+	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 )
