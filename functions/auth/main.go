@@ -171,7 +171,7 @@ func SaveTwitterAccessToken(userId int64, accessToken string) error {
 
 	query := `insert into users
 			(id, access_token) values (?, ?)
-		on duplicate key
+		on duplicate key update
 			access_token = ?`
 	db, err := core.GetDatabase()
 	if err != nil {
