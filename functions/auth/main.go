@@ -1,12 +1,14 @@
 package main
 
 import (
+	"core"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -91,6 +93,12 @@ func Post(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse
 		return utils.ErrorResponse(err, "(Post) token.SignedString")
 	}
 
+	idNum, err := strconv.Atoi(userDetails.Data.Id)
+	if err != nil {
+		return utils.ErrorResponse(err, "(Post) Converting users id to int")
+	}
+	err = SaveTwitterAccessToken(int64(idNum), twitterAuthResp.AccessToken)
+
 	jstr, err := utils.ConvertToJsonString(Response{
 		AccessToken:     tokenString,
 		Id:              userDetails.Data.Id,
@@ -154,4 +162,21 @@ func GetTwitterUserDetails(token string) (*TwitterUserResponse, error) {
 
 func main() {
 	lambda.Start(handler)
+}
+
+func SaveTwitterAccessToken(userId int64, accessToken string) error {
+
+	query := `insert into users
+			(id, access_token) values (?, ?)
+		on duplicate key
+			access_token = ?`
+	db, err := core.GetDatabase()
+	if err != nil {
+		return errors.Wrap(err, "(SaveTwitterAccessToken) core.GetDatabase")
+	}
+	_, err = db.Exec(query, userId, accessToken, accessToken)
+	if err != nil {
+		return errors.Wrap(err, "(SaveTwitterAccessToken) db.Exec")
+	}
+	return nil
 }
