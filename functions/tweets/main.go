@@ -5,10 +5,13 @@ import (
 	"database/sql"
 	"encoding/json"
 	"log"
+	"os"
+	"strings"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	utils "github.com/bmorrisondev/go-utils"
+	"github.com/golang-jwt/jwt"
 )
 
 func handler(request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
@@ -47,17 +50,22 @@ func Post(request events.APIGatewayProxyRequest, db *sql.DB) (events.APIGatewayP
 		return utils.ErrorResponse(err, "json.Unmarshal")
 	}
 
+	authHeader := request.Headers["Authorization"]
+	// TODO: VALIDATE THIS!!!
+	authHeader = strings.Replace(authHeader, "Bearer ", "", 1)
+
+	claims, _ := extractClaims(authHeader)
+	log.Println("claims", claims)
+	userId := claims["twitter:user_id"]
+
 	if len(tweets) == 1 {
-		log.Println("44")
-		query := "insert into tweets (text, send_at, retweet_at) values (?, ?, ?)"
+		query := "insert into tweets (text, send_at, retweet_at, id_user) values (?, ?, ?, ?)"
 		t := tweets[0]
-		log.Println("53")
-		results, err := db.Exec(query, t.Text, t.GetSendAtSqlTimestamp(), t.GetRetweetAtSqlTimestamp())
+		results, err := db.Exec(query, t.Text, t.GetSendAtSqlTimestamp(), t.GetRetweetAtSqlTimestamp(), userId)
 		if err != nil {
 			return utils.ErrorResponse(err, "db.Exec")
 		}
 
-		log.Println("59")
 		lastInserted, err := results.LastInsertId()
 		if err != nil {
 			return utils.ErrorResponse(err, "results.LastInsertedId")
@@ -70,11 +78,10 @@ func Post(request events.APIGatewayProxyRequest, db *sql.DB) (events.APIGatewayP
 			return utils.ErrorResponse(err, "utils.ConvertToJsonString")
 		}
 		return utils.OkResponse(&jstr)
-
 	} else {
 		threadOrder := 1
 		threadCount := len(tweets)
-		query := "insert into tweets (text, is_thread, thread_order, thread_count, send_at, retweet_at) values (?, true, ?, ?, ?, ?)"
+		query := "insert into tweets (text, is_thread, thread_order, thread_count, send_at, retweet_at, id_user) values (?, true, ?, ?, ?, ?, ?)"
 		threadStart := tweets[0]
 		results, err := db.Exec(query,
 			threadStart.Text,
@@ -82,6 +89,7 @@ func Post(request events.APIGatewayProxyRequest, db *sql.DB) (events.APIGatewayP
 			threadCount,
 			threadStart.GetSendAtSqlTimestamp(),
 			threadStart.GetRetweetAtSqlTimestamp(),
+			userId,
 		)
 		if err != nil {
 			return utils.ErrorResponse(err, "(Post) db.Exec")
@@ -94,7 +102,7 @@ func Post(request events.APIGatewayProxyRequest, db *sql.DB) (events.APIGatewayP
 		threadStart.ThreadCount = &threadCount
 
 		var params []interface{}
-		query = "insert into tweets (text, is_thread, thread_order, thread_parent, send_at, retweet_at) values (?, true, ?, ?, ?, ?)"
+		query = "insert into tweets (text, is_thread, thread_order, thread_parent, send_at, retweet_at) values (?, true, ?, ?, ?, ?, ?)"
 		for idx, el := range tweets {
 			// Skip the first tweet since it was inserted earlier
 			if idx == 0 {
@@ -109,8 +117,9 @@ func Post(request events.APIGatewayProxyRequest, db *sql.DB) (events.APIGatewayP
 			params = append(params, threadStart.Id)
 			params = append(params, el.GetSendAtSqlTimestamp())
 			params = append(params, el.GetRetweetAtSqlTimestamp())
+			params = append(params, userId)
 		}
-		results, err = db.Exec(query, params...)
+		_, err = db.Exec(query, params)
 		if err != nil {
 			return utils.ErrorResponse(err, "(Post) db.Exec on thread")
 		}
@@ -120,6 +129,26 @@ func Post(request events.APIGatewayProxyRequest, db *sql.DB) (events.APIGatewayP
 			return utils.ErrorResponse(err, "(Post) utils.ConvertToJsonString")
 		}
 		return utils.OkResponse(&jstr)
+	}
+}
+
+func extractClaims(tokenStr string) (jwt.MapClaims, bool) {
+	hmacSecretString := os.Getenv("JWT_SECRET")
+	hmacSecret := []byte(hmacSecretString)
+	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+		// check token signing method etc
+		return hmacSecret, nil
+	})
+
+	if err != nil {
+		return nil, false
+	}
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		return claims, true
+	} else {
+		log.Printf("Invalid JWT Token")
+		return nil, false
 	}
 }
 
