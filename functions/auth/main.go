@@ -98,6 +98,9 @@ func Post(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse
 		return utils.ErrorResponse(err, "(Post) Converting users id to int")
 	}
 	err = SaveTwitterAccessToken(int64(idNum), twitterAuthResp.AccessToken)
+	if err != nil {
+		return utils.ErrorResponse(err, "(Post) SaveTwitterAccessToken")
+	}
 
 	jstr, err := utils.ConvertToJsonString(Response{
 		AccessToken:     tokenString,
