@@ -3,12 +3,12 @@
   import NavLink from "./NavLink.svelte";
   import Button from './Button.svelte';
 
-  const loginUrl = `https://twitter.com/i/oauth2/authorize?response_type=code&client_id=${import.meta.env.VITE_TWITTER_CLIENT_ID}&redirect_uri=${import.meta.env.VITE_TWITTER_REDIRECT_URI}&scope=tweet.read%20users.read%20offline.access&state=state&code_challenge=challenge&code_challenge_method=plain`
+  const loginUrl = `https://twitter.com/i/oauth2/authorize?response_type=code&client_id=${import.meta.env.VITE_TWITTER_CLIENT_ID}&redirect_uri=${import.meta.env.VITE_TWITTER_REDIRECT_URI}&scope=tweet.read%20tweet.write%20users.read%20offline.access&state=state&code_challenge=challenge&code_challenge_method=plain`
   let name: string
   let handle : string
   let profilePicUrl: string
   let isLoggedIn: boolean
-  
+
   // TODO: type this
   auth.subscribe((value: any) => {
     if(!value || !value.name) {
