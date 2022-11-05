@@ -4,9 +4,6 @@ import (
 	"core"
 	"database/sql"
 	"encoding/json"
-	"log"
-	"os"
-	"strings"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -14,52 +11,28 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-func handler(request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
-
-	db, err := core.GetDatabase()
-	if err != nil {
-		log.Fatal(err)
+func main() {
+	router := core.NetlifyRouter{
+		Get:  Get,
+		Post: Post,
 	}
-
-	if request.HTTPMethod == "GET" {
-		res, err := Get(request, db)
-		return &res, err
-	}
-
-	if request.HTTPMethod == "POST" {
-		res, err := Post(request, db)
-		return &res, err
-	}
-
-	return &events.APIGatewayProxyResponse{
-		StatusCode: 404,
-	}, nil
+	lambda.Start(router.Handler)
 }
 
-func Get(request events.APIGatewayProxyRequest, db *sql.DB) (events.APIGatewayProxyResponse, error) {
+func Get(request events.APIGatewayProxyRequest, claims jwt.MapClaims, db *sql.DB) (events.APIGatewayProxyResponse, error) {
 	return events.APIGatewayProxyResponse{
 		StatusCode: 200,
 		Body:       "hello world!",
 	}, nil
 }
 
-func Post(request events.APIGatewayProxyRequest, db *sql.DB) (events.APIGatewayProxyResponse, error) {
+func Post(request events.APIGatewayProxyRequest, claims jwt.MapClaims, db *sql.DB) (events.APIGatewayProxyResponse, error) {
 	var tweets []core.Tweet
 	err := json.Unmarshal([]byte(request.Body), &tweets)
 	if err != nil {
 		return utils.ErrorResponse(err, "json.Unmarshal")
 	}
 
-	log.Println("headers", request.Headers)
-
-	authHeader := request.Headers["authorization"]
-	// TODO: VALIDATE THIS!!!
-	authHeader = strings.Replace(authHeader, "Bearer ", "", 1)
-
-	log.Println("auth", authHeader)
-
-	claims, _ := extractClaims(authHeader)
-	log.Println("claims", claims)
 	userId := claims["twitter:user_id"]
 
 	if len(tweets) == 1 {
@@ -134,28 +107,4 @@ func Post(request events.APIGatewayProxyRequest, db *sql.DB) (events.APIGatewayP
 		}
 		return utils.OkResponse(&jstr)
 	}
-}
-
-func extractClaims(tokenStr string) (jwt.MapClaims, bool) {
-	hmacSecretString := os.Getenv("JWT_SECRET")
-	hmacSecret := []byte(hmacSecretString)
-	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
-		// check token signing method etc
-		return hmacSecret, nil
-	})
-
-	if err != nil {
-		return nil, false
-	}
-
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		return claims, true
-	} else {
-		log.Printf("Invalid JWT Token")
-		return nil, false
-	}
-}
-
-func main() {
-	lambda.Start(handler)
 }
