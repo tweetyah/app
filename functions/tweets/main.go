@@ -1,7 +1,6 @@
 package main
 
 import (
-	"core"
 	"database/sql"
 	"encoding/json"
 
@@ -9,10 +8,11 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	utils "github.com/bmorrisondev/go-utils"
 	"github.com/golang-jwt/jwt"
+	"github.com/tweetyah/lib"
 )
 
 func main() {
-	router := core.NetlifyRouter{
+	router := lib.NetlifyRouter{
 		Get:  Get,
 		Post: Post,
 	}
@@ -27,7 +27,7 @@ func Get(request events.APIGatewayProxyRequest, claims jwt.MapClaims, db *sql.DB
 }
 
 func Post(request events.APIGatewayProxyRequest, claims jwt.MapClaims, db *sql.DB) (events.APIGatewayProxyResponse, error) {
-	var tweets []core.Tweet
+	var tweets []lib.Tweet
 	err := json.Unmarshal([]byte(request.Body), &tweets)
 	if err != nil {
 		return utils.ErrorResponse(err, "json.Unmarshal")

@@ -1,15 +1,9 @@
 package main
 
 import (
-	"core"
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
-	"net/http"
-	"net/url"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -17,6 +11,7 @@ import (
 	utils "github.com/bmorrisondev/go-utils"
 	"github.com/golang-jwt/jwt"
 	"github.com/pkg/errors"
+	"github.com/tweetyah/lib"
 )
 
 func handler(request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
@@ -35,24 +30,7 @@ type RequestBody struct {
 	Code string `json:"code"`
 }
 
-type TwitterAuthResponse struct {
-	AccessToken  string `json:"access_token"`
-	ExpiresIn    int    `json:"expires_in"`
-	RefreshToken string `json:"refresh_token"`
-	Scope        string `json:"scope"`
-	TokenType    string `json:"token_type"`
-}
-
-type TwitterUserResponse struct {
-	Data struct {
-		Id              string `json:"id"`
-		Name            string `json:"name"`
-		ProfileImageUrl string `json:"profile_image_url"`
-		Username        string `json:"username"`
-	} `json:"data"`
-}
-
-type Response struct {
+type ResponseBody struct {
 	AccessToken     string `json:"access_token"`
 	Id              string `json:"id"`
 	Name            string `json:"name"`
@@ -67,12 +45,12 @@ func Post(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse
 		return utils.ErrorResponse(err, "json.Unmarshal")
 	}
 
-	twitterAuthResp, err := GetTwitterTokens(body.Code)
+	twitterAuthResp, err := lib.GetTwitterTokens(body.Code)
 	if err != nil {
 		return utils.ErrorResponse(err, "(Post) GetTwitterTokens")
 	}
 
-	userDetails, err := GetTwitterUserDetails(twitterAuthResp.AccessToken)
+	userDetails, err := lib.GetTwitterUserDetails(twitterAuthResp.AccessToken)
 	if err != nil {
 		return utils.ErrorResponse(err, "(Post) GetTwitterUserDetails")
 	}
@@ -102,7 +80,7 @@ func Post(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse
 		return utils.ErrorResponse(err, "(Post) SaveTwitterAccessToken")
 	}
 
-	jstr, err := utils.ConvertToJsonString(Response{
+	jstr, err := utils.ConvertToJsonString(ResponseBody{
 		AccessToken:     tokenString,
 		Id:              userDetails.Data.Id,
 		Name:            userDetails.Data.Name,
@@ -116,53 +94,6 @@ func Post(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse
 	return utils.OkResponse(&jstr)
 }
 
-func GetTwitterTokens(code string) (*TwitterAuthResponse, error) {
-	data := url.Values{
-		"code":          {code},
-		"grant_type":    {"authorization_code"},
-		"client_id":     {os.Getenv("VITE_TWITTER_CLIENT_ID")},
-		"redirect_uri":  {os.Getenv("VITE_TWITTER_REDIRECT_URI")},
-		"code_verifier": {"challenge"},
-	}
-
-	req, err := http.NewRequest("POST", "https://api.twitter.com/2/oauth2/token", strings.NewReader(data.Encode()))
-	if err != nil {
-		return nil, errors.Wrap(err, "(GetTwitterTokens) http.NewRequest")
-	}
-	req.SetBasicAuth(os.Getenv("VITE_TWITTER_CLIENT_ID"), os.Getenv("TWITTER_CLIENT_SECRET"))
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, errors.Wrap(err, "(GetTwitterTokens) client.Do")
-	}
-	defer resp.Body.Close()
-	bodyText, err := ioutil.ReadAll(resp.Body)
-
-	var twitterAuthResp TwitterAuthResponse
-	err = json.Unmarshal([]byte(bodyText), &twitterAuthResp)
-	return &twitterAuthResp, nil
-}
-
-func GetTwitterUserDetails(token string) (*TwitterUserResponse, error) {
-	req, err := http.NewRequest("GET", "https://api.twitter.com/2/users/me?user.fields=profile_image_url", nil)
-	if err != nil {
-		return nil, errors.Wrap(err, "(GetTwitterUserDetails) http.NewRequest")
-	}
-	req.Header.Add("Authorization", fmt.Sprintf("Bearer %v", token))
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, errors.Wrap(err, "(GetTwitterTokens) client.Do")
-	}
-	defer resp.Body.Close()
-	bodyText, err := ioutil.ReadAll(resp.Body)
-
-	var response TwitterUserResponse
-	err = json.Unmarshal([]byte(bodyText), &response)
-	return &response, nil
-}
-
 func main() {
 	lambda.Start(handler)
 }
@@ -173,9 +104,9 @@ func SaveTwitterAccessToken(userId int64, accessToken string) error {
 			(id, access_token) values (?, ?)
 		on duplicate key update
 			access_token = ?`
-	db, err := core.GetDatabase()
+	db, err := lib.GetDatabase()
 	if err != nil {
-		return errors.Wrap(err, "(SaveTwitterAccessToken) core.GetDatabase")
+		return errors.Wrap(err, "(SaveTwitterAccessToken) lib.GetDatabase")
 	}
 	_, err = db.Exec(query, userId, accessToken, accessToken)
 	if err != nil {
