@@ -10,7 +10,6 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	utils "github.com/bmorrisondev/go-utils"
 	"github.com/golang-jwt/jwt"
-	"github.com/pkg/errors"
 	"github.com/tweetyah/lib"
 )
 
@@ -57,6 +56,7 @@ func Post(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"twitter:access_token":      twitterAuthResp.AccessToken,
+		"twitter:refresh_token":     twitterAuthResp.RefreshToken,
 		"twitter:expires_in":        twitterAuthResp.ExpiresIn,
 		"twitter:user_id":           userDetails.Data.Id,
 		"twitter:username":          userDetails.Data.Username,
@@ -75,7 +75,8 @@ func Post(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse
 	if err != nil {
 		return utils.ErrorResponse(err, "(Post) Converting users id to int")
 	}
-	err = SaveTwitterAccessToken(int64(idNum), twitterAuthResp.AccessToken)
+	authTokenExpiration := time.Now().Add(time.Duration(twitterAuthResp.ExpiresIn-60) * time.Second)
+	err = lib.SaveTwitterAccessToken(int64(idNum), twitterAuthResp.AccessToken, authTokenExpiration, twitterAuthResp.RefreshToken)
 	if err != nil {
 		return utils.ErrorResponse(err, "(Post) SaveTwitterAccessToken")
 	}
@@ -96,21 +97,4 @@ func Post(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse
 
 func main() {
 	lambda.Start(handler)
-}
-
-func SaveTwitterAccessToken(userId int64, accessToken string) error {
-
-	query := `insert into users
-			(id, access_token) values (?, ?)
-		on duplicate key update
-			access_token = ?`
-	db, err := lib.GetDatabase()
-	if err != nil {
-		return errors.Wrap(err, "(SaveTwitterAccessToken) lib.GetDatabase")
-	}
-	_, err = db.Exec(query, userId, accessToken, accessToken)
-	if err != nil {
-		return errors.Wrap(err, "(SaveTwitterAccessToken) db.Exec")
-	}
-	return nil
 }
