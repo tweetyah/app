@@ -2,13 +2,11 @@ module tweets
 
 go 1.19
 
-replace core => ../core
-
 require (
-	core v0.0.0
 	github.com/aws/aws-lambda-go v1.34.1
 	github.com/bmorrisondev/go-utils v1.0.1
 	github.com/golang-jwt/jwt v3.2.2+incompatible
+	github.com/tweetyah/lib v0.0.0-20221105202230-607b52794454
 )
 
 require (
