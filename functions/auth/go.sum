@@ -1,9 +1,13 @@
 github.com/aws/aws-lambda-go v1.34.1 h1:M3a/uFYBjii+tDcOJ0wL/WyFi2550FHoECdPf27zvOs=
 github.com/aws/aws-lambda-go v1.34.1/go.mod h1:jwFe2KmMsHmffA1X2R09hH6lFzJQxzI8qK17ewzbQMM=
+github.com/aws/aws-lambda-go v1.35.0 h1:iocVDy5Cw5SCRrKOPHwarkdFwwy48OkfmHoE6SJ3ATg=
+github.com/aws/aws-lambda-go v1.35.0/go.mod h1:jwFe2KmMsHmffA1X2R09hH6lFzJQxzI8qK17ewzbQMM=
 github.com/aws/aws-sdk-go v1.43.3 h1:qvCkC4FviA9rR4UvRk4ldr6f3mIJE0VaI3KrsDx1gTk=
 github.com/aws/aws-sdk-go v1.43.3/go.mod h1:OGr6lGMAKGlG9CVrYnWYDKIyb829c6EVBRjxqjmPepc=
 github.com/aws/aws-sdk-go v1.44.131 h1:kd61x79ax0vyiC/SZ9X1hKh8E0pt1BUOOcVBJEFhxkg=
 github.com/aws/aws-sdk-go v1.44.131/go.mod h1:aVsgQcEevwlmQ7qHE9I3h+dtQgpqhFB+i8Phjh7fkwI=
+github.com/aws/aws-sdk-go v1.44.144 h1:mMWdnYL8HZsobrQe1mwvQ18Xt8UbOVhWgipjuma5Mkg=
+github.com/aws/aws-sdk-go v1.44.144/go.mod h1:aVsgQcEevwlmQ7qHE9I3h+dtQgpqhFB+i8Phjh7fkwI=
 github.com/bmorrisondev/go-utils v1.0.1 h1:AijjP8Me7gCK8nxXBxNcTZRaI6FR6ZyB3C05m28XJzk=
 github.com/bmorrisondev/go-utils v1.0.1/go.mod h1:3/75AYyn+0Z6ccYSFVZ2R5HD3Z4BtrXmVGJBSzrDZMI=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
@@ -26,6 +30,12 @@ github.com/tweetyah/lib v0.0.0-20221105202230-607b52794454 h1:m/T2KRkAl641gAS29m
 github.com/tweetyah/lib v0.0.0-20221105202230-607b52794454/go.mod h1:OTlQ97XSYwq40SK/3bUthJonAOKTbsLzLBqSXOTiIYs=
 github.com/tweetyah/lib v0.0.0-20221105205022-03b042823748 h1:5lhfcqLAGyZ65pbOGQmqeQA436c+3jg16lEV1WmHaxg=
 github.com/tweetyah/lib v0.0.0-20221105205022-03b042823748/go.mod h1:OTlQ97XSYwq40SK/3bUthJonAOKTbsLzLBqSXOTiIYs=
+github.com/tweetyah/lib v0.0.0-20221122202125-f1b6e87b4581 h1:oUnVWZHqvcRZLVpppKMT3EIJIVdCl5u/krdCH36Uo3g=
+github.com/tweetyah/lib v0.0.0-20221122202125-f1b6e87b4581/go.mod h1:OTlQ97XSYwq40SK/3bUthJonAOKTbsLzLBqSXOTiIYs=
+github.com/tweetyah/lib v0.0.0-20221122210809-fcf234e3f6d1 h1:Tu6/XgKERjxeA6P7nfnPq18TEM27NG9Io1LdoJ6YlMI=
+github.com/tweetyah/lib v0.0.0-20221122210809-fcf234e3f6d1/go.mod h1:OTlQ97XSYwq40SK/3bUthJonAOKTbsLzLBqSXOTiIYs=
+github.com/tweetyah/lib v0.0.0-20221122213830-03241a1f16a8 h1:Jw+6XApNYw9QYCc01TIB7U54cipuVZRMz5JtDKyJ9qw=
+github.com/tweetyah/lib v0.0.0-20221122213830-03241a1f16a8/go.mod h1:OTlQ97XSYwq40SK/3bUthJonAOKTbsLzLBqSXOTiIYs=
 github.com/yuin/goldmark v1.4.13/go.mod h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/crypto v0.0.0-20210921155107-089bfa567519/go.mod h1:GvvjBRRGRdwPK5ydBHafDWAxML/pGHZbMvKqRZ5+Abc=

@@ -2,8 +2,8 @@
   import { auth } from '../store'
   import NavLink from "./NavLink.svelte";
   import Button from './Button.svelte';
+  import { navigateTo } from 'svelte-router-spa';
 
-  const loginUrl = `https://twitter.com/i/oauth2/authorize?response_type=code&client_id=${import.meta.env.VITE_TWITTER_CLIENT_ID}&redirect_uri=${import.meta.env.VITE_TWITTER_REDIRECT_URI}&scope=tweet.read%20tweet.write%20users.read%20offline.access&state=state&code_challenge=challenge&code_challenge_method=plain`
   let name: string
   let handle : string
   let profilePicUrl: string
@@ -12,7 +12,7 @@
   // TODO: type this
   auth.subscribe((value: any) => {
     if(!value || !value.name) {
-      redirectToLogin()
+      navigateTo("/login")
       return
     }
     name = value.name
@@ -21,24 +21,9 @@
     isLoggedIn = true
   })
 
-  function redirectToLogin() {
-    let useMastodon = import.meta.env.VITE_USE_MASTODON
-    if(useMastodon) {
-      let url = `https://fosstodon.org/oauth/authorize?`
-      url += `&client_id=${import.meta.env.VITE_MASTODON_CLIENT_ID}`
-	    url += `&redirect_uri=${import.meta.env.VITE_REDIRECT_URI}`
-      url += `&scope=read write follow`
-	    url += '&grant_type=authorization_code'
-	    url += '&response_type=code'
-      location.href = url
-    } else {
-      location.href = loginUrl
-    }
-  }
-
   function logout() {
     localStorage.removeItem("auth")
-    redirectToLogin()
+    navigateTo("/login")
   }
 
 </script>
@@ -50,7 +35,7 @@
     <NavLink title="Home" icon="bx-home" to="/" />
   </div>
   {#if !isLoggedIn}
-    <a href={loginUrl}>Login</a>
+    <a>Login</a>
   {:else}
     <div class="bg-slate-600 flex rounded shadow-sm hover:shadow-md p-1 text-slate-50">
       <img src={profilePicUrl} class="rounded-full m-0.5 w-[50px] h-[50px]" />

@@ -4,6 +4,8 @@
   import { setAuth } from '../store'
 
   onMount(async () => {
+    console.log(location)
+    console.log(document.referrer)
     let query = location.search
     query = query.replace("?", "")
     let spl = query.split("&")
@@ -18,7 +20,8 @@
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        code: map["code"]
+        code: map["code"],
+        state: map["state"]
       })
     })
     let json = await res.json()
