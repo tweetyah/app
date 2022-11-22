@@ -22,7 +22,18 @@
   })
 
   function redirectToLogin() {
-    location.href = loginUrl
+    let useMastodon = import.meta.env.VITE_USE_MASTODON
+    if(useMastodon) {
+      let url = `https://fosstodon.org/oauth/authorize?`
+      url += `&client_id=${import.meta.env.VITE_MASTODON_CLIENT_ID}`
+	    url += `&redirect_uri=${import.meta.env.VITE_REDIRECT_URI}`
+      url += `&scope=read write follow`
+	    url += '&grant_type=authorization_code'
+	    url += '&response_type=code'
+      location.href = url
+    } else {
+      location.href = loginUrl
+    }
   }
 
   function logout() {
@@ -42,7 +53,7 @@
     <a href={loginUrl}>Login</a>
   {:else}
     <div class="bg-slate-600 flex rounded shadow-sm hover:shadow-md p-1 text-slate-50">
-      <img src={profilePicUrl} class="rounded-full m-0.5" />
+      <img src={profilePicUrl} class="rounded-full m-0.5 w-[50px] h-[50px]" />
       <div class="ml-1 flex flex-col">
         <span class="font-bold">{ name }</span>
         <span class="italic text-sm">{ handle }</span>
